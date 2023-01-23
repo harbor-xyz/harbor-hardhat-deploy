@@ -11,10 +11,10 @@ import {
   BuildInfo,
   NetworkConfig,
 } from 'hardhat/types';
-import {createProvider} from 'hardhat/internal/core/providers/construction'; // TODO harhdat argument types not from internal
-import {Deployment, ExtendedArtifact} from '../types';
-import {extendEnvironment, task, subtask, extendConfig} from 'hardhat/config';
-import {HARDHAT_NETWORK_NAME, HardhatPluginError} from 'hardhat/plugins';
+import { createProvider } from 'hardhat/internal/core/providers/construction'; // TODO harhdat argument types not from internal
+import { Deployment, ExtendedArtifact } from '../types';
+import { extendEnvironment, task, subtask, extendConfig } from 'hardhat/config';
+import { HARDHAT_NETWORK_NAME, HardhatPluginError } from 'hardhat/plugins';
 import * as types from 'hardhat/internal/core/params/argumentTypes'; // TODO harhdat argument types not from internal
 import {
   TASK_NODE,
@@ -22,18 +22,18 @@ import {
   TASK_NODE_GET_PROVIDER,
   TASK_NODE_SERVER_READY,
 } from 'hardhat/builtin-tasks/task-names';
-import {lazyObject} from 'hardhat/plugins';
+import { lazyObject } from 'hardhat/plugins';
 
 import debug from 'debug';
 const log = debug('hardhat:wighawag:hardhat-deploy');
 
-import {DeploymentsManager} from './DeploymentsManager';
+import { DeploymentsManager } from './DeploymentsManager';
 import chokidar from 'chokidar';
-import {submitSources} from './etherscan';
-import {submitSourcesToSourcify} from './sourcify';
-import {Network} from 'hardhat/types/runtime';
-import {store} from './globalStore';
-import {getDeployPaths, getNetworkName} from './utils';
+import { submitSources } from './etherscan';
+import { submitSourcesToSourcify } from './sourcify';
+import { Network } from 'hardhat/types/runtime';
+import { store } from './globalStore';
+import { getDeployPaths, getNetworkName } from './utils';
 
 export const TASK_DEPLOY = 'deploy';
 export const TASK_DEPLOY_MAIN = 'deploy:main';
@@ -46,7 +46,7 @@ export const TASK_SOURCIFY = 'sourcify';
 let nodeTaskArgs: Record<string, any> = {};
 
 function isHardhatEVM(hre: HardhatRuntimeEnvironment): boolean {
-  const {network} = hre;
+  const { network } = hre;
   return network.name === HARDHAT_NETWORK_NAME;
 }
 
@@ -116,7 +116,7 @@ extendConfig(
         config.external = {};
       }
       if (userConfig.external.contracts) {
-        const externalContracts: {artifacts: string[]; deploy?: string}[] = [];
+        const externalContracts: { artifacts: string[]; deploy?: string }[] = [];
         config.external.contracts = externalContracts;
         for (const userDefinedExternalContracts of userConfig.external
           .contracts) {
@@ -128,10 +128,10 @@ extendConfig(
             artifacts: userArtifacts.map((v) => normalizePath(config, v, v)),
             deploy: userDefinedExternalContracts.deploy
               ? normalizePath(
-                  config,
-                  userDefinedExternalContracts.deploy,
-                  userDefinedExternalContracts.deploy
-                )
+                config,
+                userDefinedExternalContracts.deploy,
+                userDefinedExternalContracts.deploy
+              )
               : undefined,
           });
         }
@@ -154,7 +154,7 @@ extendConfig(
     const defaultConfig = {};
     if (userConfig.verify !== undefined) {
       const customConfig = userConfig.verify;
-      config.verify = {...defaultConfig, ...customConfig};
+      config.verify = { ...defaultConfig, ...customConfig };
     } else {
       config.verify = defaultConfig;
       // backward compatibility for runtime (js)
@@ -172,7 +172,7 @@ function createNetworkFromConfig(
   networkName: string,
   config: NetworkConfig
 ): Network {
-  const tags: {[tag: string]: boolean} = {};
+  const tags: { [tag: string]: boolean } = {};
   const tagsCollected = config.tags || [];
   for (const tag of tagsCollected) {
     tags[tag] = true;
@@ -214,7 +214,7 @@ function networkFromConfig(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if ((network.config as any).etherscan) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      network.verify = {etherscan: (network.config as any).etherscan};
+      network.verify = { etherscan: (network.config as any).etherscan };
     }
   }
 
@@ -352,8 +352,8 @@ function addIfNotPresent(array: string[], value: string) {
 }
 
 function setupExtraSolcSettings(settings: {
-  metadata: {useLiteralContent: boolean};
-  outputSelection: {'*': {'': string[]; '*': string[]}};
+  metadata: { useLiteralContent: boolean };
+  outputSelection: { '*': { '': string[]; '*': string[] } };
 }): void {
   settings.metadata = settings.metadata || {};
   settings.metadata.useLiteralContent = true;
@@ -503,10 +503,10 @@ subtask(TASK_DEPLOY_MAIN, 'deploy')
     }
 
     async function compileAndDeploy() {
-      if (!args.noCompile) {
-        await hre.run('compile');
-      }
-      return hre.run(TASK_DEPLOY_RUN_DEPLOY, {...args, reset: false});
+      // if (!args.noCompile) {
+      //   await hre.run('compile');
+      // }
+      return hre.run(TASK_DEPLOY_RUN_DEPLOY, { ...args, reset: false });
     }
 
     let currentPromise: Promise<{
@@ -600,7 +600,7 @@ task(TASK_TEST, 'Runs mocha tests')
       await hre.deployments.fixture(undefined, {
         keepExistingDeployments: true, // by default reuse the existing deployments (useful for fork testing)
       });
-      return runSuper({...args, noCompile: true});
+      return runSuper({ ...args, noCompile: true });
     } else {
       return runSuper(args);
     }
@@ -1034,9 +1034,9 @@ task('export-artifacts')
           userdoc: extendedArtifact.userdoc,
           evm: extendedArtifact.evm
             ? {
-                gasEstimates: extendedArtifact.evm.gasEstimates,
-                methodIdentifiers: extendedArtifact.evm.methodIdentifiers,
-              }
+              gasEstimates: extendedArtifact.evm.gasEstimates,
+              methodIdentifiers: extendedArtifact.evm.methodIdentifiers,
+            }
             : undefined,
         };
       }
